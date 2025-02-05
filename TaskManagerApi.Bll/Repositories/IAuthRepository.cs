@@ -4,7 +4,7 @@ namespace TaskManagerApi.Bll.Repositories
 {
     public interface IAuthRepository
     {
-        User? Login(string email, string password);
-        void Register(User user);
+        Utilisateur? Login(string email, string password);
+        void Register(Utilisateur user);
     }
 }

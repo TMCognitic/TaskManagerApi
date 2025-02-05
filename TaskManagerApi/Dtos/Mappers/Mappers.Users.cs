@@ -1,18 +1,18 @@
 ﻿using TaskManagerApi.Bll.Entities;
+using TaskManagerApi.Dtos.Utilisateurs;
 
 namespace TaskManagerApi.Dtos.Mappers
 {
     public static class Mappers
     {
-        public static UserDto ToUserDto(this User entity, string token)
+        public static UtilisateurDto ToUserDto(this Utilisateur entity)
         {
-            return new UserDto()
+            return new UtilisateurDto()
             {
                 Id = entity.Id,
                 Nom = entity.Nom,
                 Prenom = entity.Prenom,
-                Email = entity.Email,
-                Token = token,
+                Email = entity.Email
             };
         }
     }

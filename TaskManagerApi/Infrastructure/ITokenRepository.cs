@@ -1,9 +1,10 @@
-﻿using TaskManagerApi.Bll.Entities;
+﻿using TaskManagerApi.Dtos.Utilisateurs;
 
 namespace TaskManagerApi.Infrastructure
 {
     public interface ITokenRepository
     {
-        string CreateToken(User user);
+        UtilisateurDto? Utilisateur { get; }
+        void ApplyToken(UtilisateurDto user);
     }
 }

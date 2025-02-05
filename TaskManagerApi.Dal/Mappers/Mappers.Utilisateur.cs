@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 using TaskManagerApi.Dal.Entities;
 
 namespace TaskManagerApi.Dal.Mappers
 {
-    internal static class Mappers
+    internal static partial class Mappers
     {
-        public static User ToUser(this IDataRecord record)
+        public static Utilisateur ToUser(this IDataRecord record)
         {
-            return new User()
+            return new Utilisateur()
             {
                 Id = (int)record["Id"],
                 Nom = (string)record["Nom"],

@@ -14,12 +14,12 @@ namespace TaskManagerApi.Bll.Services
             _authRepository = authRepository;
         }
 
-        public User? Login(string email, string password)
+        public Utilisateur? Login(string email, string password)
         {
             return _authRepository.Login(email, password)?.ToBll();
         }
 
-        public void Register(User user)
+        public void Register(Utilisateur user)
         {
             _authRepository.Register(user.ToDal());
         }

@@ -6,7 +6,6 @@ using System.Data.Common;
 using TaskManagerApi.Bll.Repositories;
 using TaskManagerApi.Bll.Services;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using TaskManagerApi.Infrastructure;
@@ -19,23 +18,25 @@ var configuration = builder.Configuration;
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = configuration["Issuer"],
-                        ValidAudience = configuration["Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.Default.GetBytes("peALmr3S@BuYyKc-^E_enw*KVTFfU8D+7XQaTL2S")),                         
-                    };
-                });
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["Issuer"],
+                ValidAudience = configuration["Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.Default.GetBytes("peALmr3S@BuYyKc-^E_enw*KVTFfU8D+7XQaTL2S")),                         
+            };
+        });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor(); //Donne accès l'injection de IHttpContextAccessor
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -63,8 +64,10 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddScoped<DbConnection>(sp => new SqlConnection(configuration.GetConnectionString("database")));
 builder.Services.AddScoped<IDR.IAuthRepository, IDS.AuthService>();
+builder.Services.AddScoped<IDR.ITacheRepository, IDS.TacheService>();
 builder.Services.AddScoped<IAuthRepository, AuthService>();
-builder.Services.AddSingleton<ITokenRepository, TokenService>();
+builder.Services.AddScoped<ITacheRepository, TacheService>();
+builder.Services.AddScoped<ITokenRepository, TokenService>();
 
 
 var app = builder.Build();

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Bll.Entities;
 using TaskManagerApi.Bll.Repositories;
-using TaskManagerApi.Dtos;
 using TaskManagerApi.Dtos.Mappers;
+using TaskManagerApi.Dtos.Utilisateurs;
 using TaskManagerApi.Infrastructure;
 
 namespace TaskManagerApi.Controllers
@@ -23,11 +23,11 @@ namespace TaskManagerApi.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterUserDto dto)
+        public IActionResult Register(RegisterDto dto)
         {
             try
             {
-                _authRepository.Register(new User(dto.Nom, dto.Prenom, dto.Email, dto.Passwd));
+                _authRepository.Register(new Utilisateur(dto.Nom, dto.Prenom, dto.Email, dto.Passwd));
                 return Ok();
             }
             catch (Exception ex)
@@ -37,18 +37,21 @@ namespace TaskManagerApi.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginUserDto dto)
+        public IActionResult Login(LoginDto dto)
         {
             try
             {
-                User? user = _authRepository.Login(dto.Email, dto.Passwd);
+                Utilisateur? user = _authRepository.Login(dto.Email, dto.Passwd);
 
                 if (user == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(user.ToUserDto(_tokenRepository.CreateToken(user)));
+                UtilisateurDto utilisateurDto = user.ToUserDto();
+                _tokenRepository.ApplyToken(utilisateurDto);
+
+                return Ok(utilisateurDto);
             }
             catch (Exception ex)
             {

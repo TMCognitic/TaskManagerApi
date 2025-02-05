@@ -1,9 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManagerApi.Dtos
+namespace TaskManagerApi.Dtos.Utilisateurs
 {
-    public class LoginUserDto
+    public class RegisterDto
     {
+        [Required]
+        [MaxLength(50)]
+        public required string Nom { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public required string Prenom { get; set; }
         [Required]
         [MaxLength(384)]
         [EmailAddress]
