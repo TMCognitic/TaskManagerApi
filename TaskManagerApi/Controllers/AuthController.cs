@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagerApi.Bll.Entities;
-using TaskManagerApi.Bll.Repositories;
+using TaskManagerApi.Domain.Commands;
+using TaskManagerApi.Domain.Entities;
+using TaskManagerApi.Domain.Queries;
+using TaskManagerApi.Domain.Repositories;
 using TaskManagerApi.Dtos.Mappers;
 using TaskManagerApi.Dtos.Utilisateurs;
 using TaskManagerApi.Infrastructure;
@@ -25,15 +27,12 @@ namespace TaskManagerApi.Controllers
         [HttpPost("register")]
         public IActionResult Register(RegisterDto dto)
         {
-            try
+            if(_authRepository.Execute(new RegisterCommand(dto.Nom, dto.Prenom, dto.Email, dto.Passwd)))
             {
-                _authRepository.Register(new Utilisateur(dto.Nom, dto.Prenom, dto.Email, dto.Passwd));
-                return Ok();
+                return NoContent();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { ErrorType = ex.GetType() });
-            }            
+            
+            return BadRequest();
         }
 
         [HttpPost("login")]
@@ -41,7 +40,7 @@ namespace TaskManagerApi.Controllers
         {
             try
             {
-                Utilisateur? user = _authRepository.Login(dto.Email, dto.Passwd);
+                Utilisateur? user = _authRepository.Execute(new LoginQuery(dto.Email, dto.Passwd));
 
                 if (user == null)
                 {

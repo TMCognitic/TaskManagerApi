@@ -1,4 +1,4 @@
-﻿using TaskManagerApi.Bll.Entities;
+﻿using TaskManagerApi.Domain.Entities;
 using TaskManagerApi.Dtos.Utilisateurs;
 
 namespace TaskManagerApi.Dtos.Mappers

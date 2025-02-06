@@ -1,15 +1,12 @@
-using IDR = TaskManagerApi.Dal.Repositories;
-using IDS = TaskManagerApi.Dal.Services;
-
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
-using TaskManagerApi.Bll.Repositories;
-using TaskManagerApi.Bll.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using TaskManagerApi.Infrastructure;
 using Microsoft.OpenApi.Models;
+using TaskManagerApi.Domain.Repositories;
+using TaskManagerApi.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -63,10 +60,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddScoped<DbConnection>(sp => new SqlConnection(configuration.GetConnectionString("database")));
-builder.Services.AddScoped<IDR.IAuthRepository, IDS.AuthService>();
-builder.Services.AddScoped<IDR.ITacheRepository, IDS.TacheService>();
 builder.Services.AddScoped<IAuthRepository, AuthService>();
-builder.Services.AddScoped<ITacheRepository, TacheService>();
+//builder.Services.AddScoped<ITacheRepository, TacheService>();
 builder.Services.AddScoped<ITokenRepository, TokenService>();
 
 
