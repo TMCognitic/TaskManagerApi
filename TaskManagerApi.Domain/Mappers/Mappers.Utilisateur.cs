@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using TaskManagerApi.Domain.Entities;
 
-namespace TaskManagerApi.Domains.Mappers
+namespace TaskManagerApi.Domain.Mappers
 {
     internal static partial class Mappers
     {

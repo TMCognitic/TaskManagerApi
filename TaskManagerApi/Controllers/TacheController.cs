@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TaskManagerApi.Domain.Commands;
+using TaskManagerApi.Domain.Entities;
+using TaskManagerApi.Domain.Queries;
+using TaskManagerApi.Domain.Repositories;
 using TaskManagerApi.Dtos.Taches;
 using TaskManagerApi.Dtos.Utilisateurs;
 using TaskManagerApi.Infrastructure;
@@ -11,72 +15,67 @@ namespace TaskManagerApi.Controllers
     [Authorize]
     public class TacheController : ControllerBase
     {
-        //private readonly UtilisateurDto _utilisateurCourant;
-        //private readonly ITacheRepository _tacheRepository;
+        private readonly UtilisateurDto _utilisateurCourant;
+        private readonly ITacheRepository _tacheRepository;
 
-        //public TacheController(ITokenRepository tokenRepository, ITacheRepository tacheRepository)
-        //{
-        //    _utilisateurCourant = tokenRepository.Utilisateur!;
-        //    _tacheRepository = tacheRepository;
-        //}
+        public TacheController(ITokenRepository tokenRepository, ITacheRepository tacheRepository)
+        {
+            _utilisateurCourant = tokenRepository.Utilisateur!;
+            _tacheRepository = tacheRepository;
+        }
 
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
-        //    return Ok(_tacheRepository.Get(_utilisateurCourant.Id));
-        //}
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(_tacheRepository.Execute(new GetTachesQuery(_utilisateurCourant.Id)));
+        }
 
-        //[HttpGet("{tacheId}")]
-        //public IActionResult Get(int tacheId)
-        //{
-        //    Tache? tache = _tacheRepository.Get(tacheId, _utilisateurCourant.Id);
+        [HttpGet("{tacheId}")]
+        public IActionResult Get(int tacheId)
+        {
+            Tache? tache = _tacheRepository.Execute(new GetTacheByIdQuery(tacheId, _utilisateurCourant.Id));
 
-        //    if (tache is null)
-        //        return NotFound();
+            if (tache is null)
+                return NotFound();
 
-        //    return Ok(tache);
-        //}
+            return Ok(tache);
+        }
 
-        //[HttpPost]
-        //public IActionResult Post(CreateTacheDto dto)
-        //{
-        //    try
-        //    {
-        //        _tacheRepository.Insert(new Tache(dto.Titre, _utilisateurCourant.Id));
-        //        return NoContent();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPost]
+        public IActionResult Post(CreateTacheDto dto)
+        {
+            if(_tacheRepository.Execute(new AddTacheCommand(dto.Titre, _utilisateurCourant.Id)))
+                return NoContent();
 
-        //[HttpPut("{id}")]
-        //public IActionResult Put(int id, UpdateTacheDto dto)
-        //{
-        //    try
-        //    {
-        //        _tacheRepository.Update(id, new Tache(dto.Titre, _utilisateurCourant.Id) { Status = dto.Status });
-        //        return NoContent();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+            return BadRequest();
+        }
 
-        //[HttpPatch("{id}")]
-        //public IActionResult Patch(int id, ChangeStatusDto dto)
-        //{
-        //    try
-        //    {
-        //        _tacheRepository.ChangeStatus(id, dto.Status, _utilisateurCourant.Id);
-        //        return NoContent();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, UpdateTacheDto dto)
+        {
+            try
+            {
+                _tacheRepository.Execute(new UpdateTacheCommand(id, dto.Titre, dto.Status, _utilisateurCourant.Id));
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public IActionResult Patch(int id, ChangeStatusDto dto)
+        {
+            try
+            {
+                _tacheRepository.Execute(new ChangeTacheStatusCommand(id, dto.Status, _utilisateurCourant.Id));
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

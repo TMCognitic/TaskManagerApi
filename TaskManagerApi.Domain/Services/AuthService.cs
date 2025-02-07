@@ -5,7 +5,7 @@ using TaskManagerApi.Domain.Commands;
 using TaskManagerApi.Domain.Entities;
 using TaskManagerApi.Domain.Queries;
 using TaskManagerApi.Domain.Repositories;
-using TaskManagerApi.Domains.Mappers;
+using TaskManagerApi.Domain.Mappers;
 
 namespace TaskManagerApi.Domain.Services
 {

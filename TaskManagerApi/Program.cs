@@ -61,7 +61,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddScoped<DbConnection>(sp => new SqlConnection(configuration.GetConnectionString("database")));
 builder.Services.AddScoped<IAuthRepository, AuthService>();
-//builder.Services.AddScoped<ITacheRepository, TacheService>();
+builder.Services.AddScoped<ITacheRepository, TacheService>();
 builder.Services.AddScoped<ITokenRepository, TokenService>();
 
 
