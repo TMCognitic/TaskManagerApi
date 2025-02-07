@@ -9,6 +9,6 @@ namespace Tools.CQS.Queries
     public interface IQueryHandler<TQuery, TResult>
         where TQuery : IQueryDefinition<TResult>
     {
-        TResult Execute(TQuery query);
+        QueryResult<TResult> Execute(TQuery query);
     }
 }

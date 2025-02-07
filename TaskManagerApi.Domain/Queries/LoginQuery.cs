@@ -8,7 +8,7 @@ using Tools.CQS.Queries;
 
 namespace TaskManagerApi.Domain.Queries
 {
-    public class LoginQuery : IQueryDefinition<Utilisateur?>
+    public class LoginQuery : IQueryDefinition<Utilisateur>
     {
         public string Email { get; }
         public string Passwd { get; }

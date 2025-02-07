@@ -7,6 +7,7 @@ using TaskManagerApi.Domain.Repositories;
 using TaskManagerApi.Dtos.Taches;
 using TaskManagerApi.Dtos.Utilisateurs;
 using TaskManagerApi.Infrastructure;
+using Tools.CQS.Commands;
 
 namespace TaskManagerApi.Controllers
 {
@@ -44,10 +45,18 @@ namespace TaskManagerApi.Controllers
         [HttpPost]
         public IActionResult Post(CreateTacheDto dto)
         {
-            if(_tacheRepository.Execute(new AddTacheCommand(dto.Titre, _utilisateurCourant.Id)))
-                return NoContent();
+            CommandResult result = _tacheRepository.Execute(new AddTacheCommand(dto.Titre, _utilisateurCourant.Id));
+            if (result.IsFailure)
+            {
+#if DEBUG
+                return BadRequest(new { result });
+#else
+                return BadRequest(new { ErrorMessage = "Something Wrong!!" });
+#endif
 
-            return BadRequest();
+            }
+
+            return NoContent();
         }
 
         [HttpPut("{id}")]

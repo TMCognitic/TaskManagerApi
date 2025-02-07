@@ -7,6 +7,8 @@ using TaskManagerApi.Domain.Repositories;
 using TaskManagerApi.Dtos.Mappers;
 using TaskManagerApi.Dtos.Utilisateurs;
 using TaskManagerApi.Infrastructure;
+using Tools.CQS.Commands;
+using Tools.CQS.Queries;
 
 namespace TaskManagerApi.Controllers
 {
@@ -27,12 +29,14 @@ namespace TaskManagerApi.Controllers
         [HttpPost("register")]
         public IActionResult Register(RegisterDto dto)
         {
-            if(_authRepository.Execute(new RegisterCommand(dto.Nom, dto.Prenom, dto.Email, dto.Passwd)))
+            CommandResult result = _authRepository.Execute(new RegisterCommand(dto.Nom, dto.Prenom, dto.Email, dto.Passwd));
+            
+            if(result.IsFailure)
             {
-                return NoContent();
+                return BadRequest(new { result.ErrorMessage });
             }
             
-            return BadRequest();
+            return NoContent();
         }
 
         [HttpPost("login")]
@@ -40,14 +44,19 @@ namespace TaskManagerApi.Controllers
         {
             try
             {
-                Utilisateur? user = _authRepository.Execute(new LoginQuery(dto.Email, dto.Passwd));
+                QueryResult<Utilisateur> result = _authRepository.Execute(new LoginQuery(dto.Email, dto.Passwd));
 
-                if (user == null)
+                if (result.IsFailure && result.ErrorMessage == "Email et mot de passe incorrecte")
                 {
-                    return NotFound();
+                    return NotFound(result);
                 }
 
-                UtilisateurDto utilisateurDto = user.ToUserDto();
+                if (result.IsFailure)
+                {
+                    return BadRequest(result);
+                }
+
+                UtilisateurDto utilisateurDto = result.Result.ToUserDto();
                 _tokenRepository.ApplyToken(utilisateurDto);
 
                 return Ok(utilisateurDto);

@@ -8,7 +8,7 @@ using Tools.CQS.Queries;
 namespace TaskManagerApi.Domain.Repositories
 {
     public interface IAuthRepository : ICommandHandler<RegisterCommand>,
-        IQueryHandler<LoginQuery, Utilisateur?>
+        IQueryHandler<LoginQuery, Utilisateur>
     {
     }
 }
