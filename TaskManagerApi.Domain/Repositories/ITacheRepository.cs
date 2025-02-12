@@ -16,7 +16,7 @@ namespace TaskManagerApi.Domain.Repositories
         ICommandHandler<UpdateTacheCommand>,
         ICommandHandler<ChangeTacheStatusCommand>,
         IQueryHandler<GetTachesQuery, IEnumerable<Tache>>,
-        IQueryHandler<GetTacheByIdQuery, Tache?>
+        IQueryHandler<GetTacheByIdQuery, Tache>
     {
     }
 }

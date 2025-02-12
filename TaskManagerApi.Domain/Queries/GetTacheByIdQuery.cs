@@ -8,7 +8,7 @@ using Tools.CQS.Queries;
 
 namespace TaskManagerApi.Domain.Queries
 {
-    public class GetTacheByIdQuery : IQueryDefinition<Tache?>
+    public class GetTacheByIdQuery : IQueryDefinition<Tache>
     {
         public int Id { get; }
         public int UtilisateurId { get; }

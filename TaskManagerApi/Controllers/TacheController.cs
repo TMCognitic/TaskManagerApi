@@ -8,6 +8,7 @@ using TaskManagerApi.Dtos.Taches;
 using TaskManagerApi.Dtos.Utilisateurs;
 using TaskManagerApi.Infrastructure;
 using Tools.CQS.Commands;
+using Tools.CQS.Queries;
 
 namespace TaskManagerApi.Controllers
 {
@@ -28,18 +29,27 @@ namespace TaskManagerApi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_tacheRepository.Execute(new GetTachesQuery(_utilisateurCourant.Id)));
+            QueryResult<IEnumerable<Tache>> result = _tacheRepository.Execute(new GetTachesQuery(_utilisateurCourant.Id));
+
+            if(result.IsFailure)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result.Result);
         }
 
         [HttpGet("{tacheId}")]
         public IActionResult Get(int tacheId)
         {
-            Tache? tache = _tacheRepository.Execute(new GetTacheByIdQuery(tacheId, _utilisateurCourant.Id));
+            QueryResult<Tache> result = _tacheRepository.Execute(new GetTacheByIdQuery(tacheId, _utilisateurCourant.Id));
 
-            if (tache is null)
-                return NotFound();
+            if (result.IsFailure)
+            {
+                return BadRequest(result);
+            }
 
-            return Ok(tache);
+            return Ok(result.Result);
         }
 
         [HttpPost]

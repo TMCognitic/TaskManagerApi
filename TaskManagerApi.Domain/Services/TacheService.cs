@@ -5,6 +5,8 @@ using TaskManagerApi.Domain.Entities;
 using TaskManagerApi.Domain.Mappers;
 using TaskManagerApi.Domain.Queries;
 using TaskManagerApi.Domain.Repositories;
+using Tools.CQS.Commands;
+using Tools.CQS.Queries;
 
 namespace TaskManagerApi.Domain.Services
 {
@@ -18,63 +20,91 @@ namespace TaskManagerApi.Domain.Services
             _dbConnection.Open();
         }
 
-        public bool Execute(AddTacheCommand command)
+        public CommandResult Execute(AddTacheCommand command)
         {
             try
             {
                 int rows = _dbConnection.ExecuteNonQuery("[AppUser].[CreateTache]", true, command);
-                if (rows == 1)
+                if (rows != 1)
                 {
-                    return true;
+                    return CommandResult.Failure("Somethihg Wrong");
                 }
+
+                return CommandResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                return CommandResult.Failure(ex.Message, ex);
             }
-
-            return false;
         }
 
-        public IEnumerable<Tache> Execute(GetTachesQuery query)
+        public QueryResult<IEnumerable<Tache>> Execute(GetTachesQuery query)
         {
-            return _dbConnection.ExecuteReader("[AppUser].[GetTaches]", dr => dr.ToTache(), true, query);
+            try
+            {
+                IEnumerable<Tache> taches = _dbConnection.ExecuteReader("[AppUser].[GetTaches]", dr => dr.ToTache(), true, query).ToList();
+                return QueryResult<IEnumerable<Tache>>.Success(taches);
+            }
+            catch (Exception ex)
+            {
+                return QueryResult<IEnumerable<Tache>>.Failure(ex.Message, ex);
+            }
         }
 
-        public Tache? Execute(GetTacheByIdQuery query)
+        public QueryResult<Tache> Execute(GetTacheByIdQuery query)
         {
-            return _dbConnection.ExecuteReader("[AppUser].[GetTacheById]", dr => dr.ToTache(), true, query).SingleOrDefault();
+            try
+            {
+                Tache? tache = _dbConnection.ExecuteReader("[AppUser].[GetTacheById]", dr => dr.ToTache(), true, query).SingleOrDefault();
+
+                if (tache is null)
+                    return QueryResult<Tache>.Failure("Not found");
+
+
+                return QueryResult<Tache>.Success(tache);
+            }
+            catch (Exception ex)
+            {
+                return QueryResult<Tache>.Failure(ex.Message, ex);
+            }
         }
 
-        public bool Execute(UpdateTacheCommand command)
+        public CommandResult Execute(UpdateTacheCommand command)
         {
             try
             {
                 int rows = _dbConnection.ExecuteNonQuery("[AppUser].[UpdateTache]", true, command);
 
-                if(rows == 1)
-                    return true;
+                if (rows != 1)
+                {
+                    return CommandResult.Failure("Somethihg Wrong");
+                }
+
+                return CommandResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                return CommandResult.Failure(ex.Message, ex);
             }
-            
-            return false;
         }
 
-        public bool Execute(ChangeTacheStatusCommand command)
+        public CommandResult Execute(ChangeTacheStatusCommand command)
         {
             try
             {
                 int rows = _dbConnection.ExecuteNonQuery("[AppUser].[ChangeTacheStatus]", true, command);
 
-                if (rows == 1)
-                    return true;
-            }
-            catch (Exception)
-            {
-            }
+                if (rows != 1)
+                {
+                    return CommandResult.Failure("Somethihg Wrong");
+                }
 
-            return false;
+                return CommandResult.Success();
+            }
+            catch (Exception ex)
+            {
+                return CommandResult.Failure(ex.Message, ex);
+            }
         }
     }
 }
